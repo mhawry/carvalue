@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h2>Results</h2>
+{% endblock %}
+
+{% block content %}
+    <span>
+        The estimated value for a {{ car_name }}{% if mileage is not none %} with {{ "{:,}".format(mileage) }} miles {% endif %} is <strong>${{ "{:,}".format(estimate) }}</strong>.
+        Please see below some of the samples that were used to generate this estimate.
+    </span>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>VIN</th>
+                <th>Vehicle</th>
+                <th>Price</th>
+                <th>Mileage</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, val in results.iterrows() %}
+                <tr>
+                    <td>{{ val['vin'] }}</td>
+                    <td>{{ val['year'] }} {{ val['make'] }} {{ val['model'] }} {{ val['trim'] }}</td>
+                    <td>${{ "{:,}".format(val['listing_price']) }}</td>
+                    <td>{{ "{:,}".format(val['listing_mileage']) }} miles</td>
+                    <td>{{ val['dealer_city'] }}, {{ val['dealer_state'] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <span><a href="{{ url_for('index') }}">Search a different car</a></span>
+{% endblock %}

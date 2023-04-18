@@ -1,0 +1,9 @@
+.container {
+    padding-bottom: 40px;
+}
+h1, h2 {
+    margin: 10px 0;
+}
+form legend {
+    margin-bottom: 0;
+}
