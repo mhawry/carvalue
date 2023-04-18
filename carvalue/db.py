@@ -3,14 +3,14 @@ import re
 import shutil
 import click
 from flask import current_app
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
 
 BASE_DB_SCHEMA_FILE = 'base_db_schema.sql'
 
 
 def init_db():
     """Initialize the base database structure"""
-    engine = current_app.config['DB_ENGINE']
+    engine = create_engine(current_app.config['DB_ENGINE'])
 
     # note: the schema is idempotent (can be run multiple times)
     with engine.connect() as connection, current_app.open_resource(BASE_DB_SCHEMA_FILE) as f:
@@ -38,7 +38,7 @@ def process_market_data_file(filename: str) -> None:
         f.write(re.sub("\\\"", "", data))
         f.truncate()
 
-    engine = current_app.config['DB_ENGINE']
+    engine = create_engine(current_app.config['DB_ENGINE'])
 
     # this is the fastest way to import the data into the table
     # TODO this breaks when uploading the same data twice (unique index on vin)
@@ -49,7 +49,7 @@ def process_market_data_file(filename: str) -> None:
 
 def process_purge_market_data() -> None:
     """Purge existing market data from the database"""
-    engine = current_app.config['DB_ENGINE']
+    engine = create_engine(current_app.config['DB_ENGINE'])
 
     with engine.connect() as connection:
         connection.execute(text('TRUNCATE TABLE cars;'))
