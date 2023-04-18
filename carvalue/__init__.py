@@ -116,3 +116,6 @@ def create_app():
         return year, make, model, mileage
 
     return app
+
+
+app = create_app()
