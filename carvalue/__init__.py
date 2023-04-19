@@ -110,6 +110,7 @@ def create_app():
             mileage = int(mileage)
         elif mileage:
             g.form_errors.append("Invalid value for mileage")
+            return
         else:
             mileage = None
 
