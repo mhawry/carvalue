@@ -49,14 +49,14 @@ def create_app():
         return render_template('search/index.html')
 
     def estimate_value(cars_df: pandas.DataFrame, mileage: int = None) -> int:
-        """Estimates the value of a car based on similar cars and mileage (if provided)
+        """Estimate the value of a car based on similar cars and mileage (if provided)
 
         Parameters
         ----------
         cars_df : pandas.DataFrame
             A DataFrame containing sample data on similar cars
         mileage : int, Optional
-            The position side (SIDE_BUY or SIDE_SELL)
+            The mileage to estimate for
 
         Returns
         -------
@@ -79,6 +79,20 @@ def create_app():
         return int(math.ceil(estimate / 100.0)) * 100
 
     def validate_form(car: str, mileage: str) -> list or None:
+        """Validate user-submitted values for car and mileage
+
+        Parameters
+        ----------
+        car : str
+            A string potentially containing a valid year, make and model
+        mileage : str, Optional
+            A string potentially containing a valid mileage value (or empty if not provided)
+
+        Returns
+        -------
+        list|None
+            A list containing the validated year, make, model, and mileage values (or None if there are errors)
+        """
         car = car.strip().lower()
 
         # in case someone decides to use a "," or "." in the mileage
