@@ -22,16 +22,44 @@ class Car:
         """
         engine = current_app.config['DB_ENGINE']
 
-        query = 'select vin, year, make, model, trim, listing_price, listing_mileage, dealer_city, dealer_state from cars where year = %(year)s AND LOWER(make) = %(make)s AND LOWER(model) = %(model)s'
+        query = 'SELECT vin, year, make, model, trim, listing_price, listing_mileage, dealer_city, dealer_state FROM cars WHERE year = %(year)s AND LOWER(make) = %(make)s AND LOWER(model) = %(model)s'
         params = {
             'year': self.year,
             'make': self.make,
             'model': self.model,
         }
-        df = pd.read_sql_query(query, con=engine, params=params).dropna()
+        df = pd.read_sql_query(sql=query, con=engine, params=params).dropna()
 
         # those need to be ints (they are floats by default)
         df['listing_price'] = df['listing_price'].astype(int)
         df['listing_mileage'] = df['listing_mileage'].astype(int)
 
         return df
+
+    @staticmethod
+    def fetch_existing_makes() -> list:
+        """Fetch the makes for which we have data in our database
+
+        Returns
+        -------
+        list
+            A list of makes
+        """
+        df = pd.read_sql_query(sql='SELECT LOWER(make) AS make FROM makes',
+                               con=current_app.config['DB_ENGINE'])
+
+        return df['make'].values
+
+    @staticmethod
+    def fetch_existing_models() -> list:
+        """Fetch the models for which we have data in our database
+
+        Returns
+        -------
+        list
+            A list of models
+        """
+        df = pd.read_sql_query(sql='SELECT LOWER(model) AS model FROM models',
+                               con=current_app.config['DB_ENGINE'])
+
+        return df['model'].values

@@ -90,9 +90,15 @@ def create_app():
 
         # this is to make sure the value for car contains at least three parts
         try:
-            year, make, model = car.split(maxsplit=2)  # TODO what if the make has a space in it?
+            year, make_and_model = car.split(maxsplit=1)
         except ValueError:
             g.form_errors.append("The value for Car is invalid. Please make sure to include the year, make, and model.")
+            return
+
+        make, model = extract_make_and_model(make_and_model)
+
+        if make is None or model is None:
+            g.form_errors.append(f"Sorry, we cannot find a make and model that matches {make_and_model}")
             return
 
         if year.isdigit():
@@ -115,6 +121,30 @@ def create_app():
             mileage = None
 
         return year, make, model, mileage
+
+    def extract_make_and_model(make_and_model: str) -> (str or None, str or None):
+        """Extract the make and model from a single string
+
+        Parameters
+        ----------
+        make_and_model : str
+            A string potentially containing a valid make and model
+
+        Returns
+        -------
+        (str|None, str|None)
+            A valid make and model (or None if they can't be found)
+        """
+        make, model = None, None
+        makes, models = Car.fetch_existing_makes(), Car.fetch_existing_models()
+
+        # TODO is there a better/faster way to do this?
+        for i in range(len(make_and_model)):
+            if make_and_model[i] == ' ':
+                if make_and_model[:i] in makes and make_and_model[i+1:] in models:
+                    make, model = make_and_model[:i], make_and_model[i+1:]
+
+        return make, model
 
     return app
 
