@@ -93,32 +93,33 @@ def create_app():
         list|None
             A list containing the validated year, make, model, and mileage values (or None if there are errors)
         """
-        car = car.strip().lower()
+        car = car.strip()
 
         # in case someone decides to use a "," or "." in the mileage
         mileage = mileage.strip().replace(',', '').replace('.', '')
 
         if not car:
-            g.form_errors.append("You need to specify a value for Car")
+            g.form_errors.append("Please enter a value for Car")
             return
 
         # this is to make sure the value for car contains at least three parts
         try:
-            year, make_and_model = car.split(maxsplit=1)
+            year, make, model = car.split(maxsplit=2)
         except ValueError:
             g.form_errors.append("The value for Car is invalid. Please make sure to include the year, make, and model.")
-            return
-
-        make, model = extract_make_and_model(make_and_model)
-
-        if make is None or model is None:
-            g.form_errors.append(f"Sorry, we cannot find a make and model that matches {make_and_model}")
             return
 
         if year.isdigit():
             year = int(year)
         else:
             g.form_errors.append(f"{year} is not a valid year")
+            return
+
+        make_and_model = f"{make} {model}"
+        make, model = extract_make_and_model(make_and_model)
+
+        if make is None or model is None:
+            g.form_errors.append(f"Sorry, we cannot find a make and model that matches {make_and_model}")
             return
 
         if year < MIN_YEAR_VALUE or year > MAX_YEAR_VALUE:
@@ -129,7 +130,7 @@ def create_app():
         if mileage.isdigit():
             mileage = int(mileage)
         elif mileage:
-            g.form_errors.append("Invalid value for Mileage")
+            g.form_errors.append(f"{mileage} is not a valid Mileage")
             return
         else:
             mileage = None
@@ -155,7 +156,7 @@ def create_app():
         # TODO is there a better/faster way to do this?
         for i in range(len(make_and_model)):
             if make_and_model[i] == ' ':
-                if make_and_model[:i] in makes and make_and_model[i+1:] in models:
+                if make_and_model[:i].lower() in makes and make_and_model[i+1:].lower() in models:
                     make, model = make_and_model[:i], make_and_model[i+1:]
 
         return make, model

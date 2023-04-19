@@ -9,11 +9,11 @@ class Car:
         self.model = model
 
     def get_name(self) -> str:
-        """Returns the car name (year, make, and model) as a single string"""
-        return f"{self.year} {self.make.capitalize()} {self.model.capitalize()}"
+        """Return the car name (year, make, and model) as a single string"""
+        return f"{self.year} {self.make} {self.model}"
 
     def find_similar(self) -> pd.DataFrame:
-        """Generates a DataFrame of cars with the same year, make, and model
+        """Generate a DataFrame of cars with the same year, make, and model
 
         Returns
         -------
@@ -25,8 +25,8 @@ class Car:
         query = 'SELECT vin, year, make, model, trim, listing_price, listing_mileage, dealer_city, dealer_state FROM cars WHERE year = %(year)s AND LOWER(make) = %(make)s AND LOWER(model) = %(model)s'
         params = {
             'year': self.year,
-            'make': self.make,
-            'model': self.model,
+            'make': self.make.lower(),
+            'model': self.model.lower(),
         }
         df = pd.read_sql_query(sql=query, con=engine, params=params).dropna()
 
