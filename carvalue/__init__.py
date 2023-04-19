@@ -85,31 +85,31 @@ def create_app():
         mileage = mileage.strip().replace(',', '').replace('.', '')
 
         if not car:
-            g.form_errors.append("You need to specify a car")
+            g.form_errors.append("You need to specify a value for Car")
             return
 
         # this is to make sure the value for car contains at least three parts
         try:
             year, make, model = car.split(maxsplit=2)  # TODO what if the make has a space in it?
         except ValueError:
-            g.form_errors.append("The provided value for car is invalid. Please make sure to include the year, make, and model")
+            g.form_errors.append("The value for Car is invalid. Please make sure to include the year, make, and model.")
             return
 
         if year.isdigit():
             year = int(year)
         else:
-            g.form_errors.append("Please enter a valid year")
+            g.form_errors.append(f"{year} is not a valid year")
             return
 
         if year < MIN_YEAR_VALUE or year > MAX_YEAR_VALUE:
-            g.form_errors.append(f"The year needs to be between {MIN_YEAR_VALUE} and {MAX_YEAR_VALUE} (inclusively)")
+            g.form_errors.append(f"The year needs to be between {MIN_YEAR_VALUE} and {MAX_YEAR_VALUE} (inclusive)")
             return
 
         # mileage needs to either be an int or empty
         if mileage.isdigit():
             mileage = int(mileage)
         elif mileage:
-            g.form_errors.append("Invalid value for mileage")
+            g.form_errors.append("Invalid value for Mileage")
             return
         else:
             mileage = None
