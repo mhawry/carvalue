@@ -46,13 +46,20 @@ def process_market_data_file(filename: str) -> None:
         connection.execute(text(f"COPY cars FROM '{temp_file}' DELIMITER '|' CSV HEADER;"))
         connection.commit()
 
+        # the makes and models materialized view need to be updated
+        connection.execute(text("REFRESH MATERIALIZED VIEW makes;"))
+        connection.commit()
+
+        connection.execute(text("REFRESH MATERIALIZED VIEW models;"))
+        connection.commit()
+
 
 def process_purge_market_data() -> None:
     """Purge existing market data from the database"""
     engine = create_engine(current_app.config['DB_ENGINE'])
 
     with engine.connect() as connection:
-        connection.execute(text('TRUNCATE TABLE cars;'))
+        connection.execute(text("TRUNCATE TABLE cars;"))
         connection.commit()
 
 
